@@ -70,6 +70,10 @@ class MainActivity : AppCompatActivity() {
      */
     private fun openSerialPort(device: UsbDevice) {
         try {
+            val manager = getSystemService<UsbManager>() ?: return
+            val connection = manager.openDevice(device) ?: return
+
+            println("USB connection opened. Device name: ${device.deviceName}; Serial; ${connection.serial}")
             serialPort = SerialPort(device.deviceName).apply {
                 openPort()
                 setParams(BAUD_RATE, 8, 1, 0)

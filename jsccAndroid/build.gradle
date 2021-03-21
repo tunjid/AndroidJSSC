@@ -6,6 +6,7 @@ plugins {
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.2"
+    ndkVersion "21.4.7075529"
 
     defaultConfig {
         minSdkVersion 21
@@ -17,7 +18,7 @@ android {
         consumerProguardFiles "consumer-rules.pro"
 
         ndk {
-            abiFilters "armeabi-v7a", "x86"
+            abiFilters 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
         }
     }
 
