@@ -1,5 +1,6 @@
 plugins {
     id 'com.android.library'
+    id 'maven-publish'
 }
 
 android {
@@ -37,9 +38,57 @@ android {
     }
 }
 
-dependencies {
+afterEvaluate {
+    publishing {
+        publications {
+            lib(MavenPublication) {
+                from components.release
 
-    testImplementation 'junit:junit:4.+'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+                version = '0.0.0'
+                groupId = 'com.tunjid'
+                artifactId project.getName()
+
+                // Add sources too
+                afterEvaluate {
+                    artifact(sourcesJar) {
+                        classifier = 'sources'
+                        extension = 'jar'
+                    }
+                }
+            }
+        }
+        repositories {
+//            maven {
+//                name = parent.ext.publishRepoName
+//                url = parent.ext.publishUrl
+//                credentials {
+//                    username = parent.ext.publishUserName
+//                    password = parent.ext.publishPassword
+//                }
+//            }
+//            parent.ext.publishRepositories.each { repo ->
+//                def props = (repo as ConfigObject).toProperties()
+//                maven {
+//                    name = props['name']
+//                    url = props['url']
+//                    credentials {
+//                        username = props['credentials.username']
+//                        password = props['credentials.password']
+//                    }
+//                }
+//            }
+        }
+    }
+}
+
+// Gradle task to generate sources after building a release aar
+task sourcesJar(type: Jar) {
+    archiveClassifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+
+tasks.whenTaskAdded { task ->
+    if (task.name == 'assembleRelease') {
+        task.dependsOn 'sourcesJar'
+    }
 }
